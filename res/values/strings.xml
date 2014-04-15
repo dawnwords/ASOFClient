@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AndroidServiceOrchestraFramework</string>
+    <string name="start_felix">Start Felix Servcie</string>
+    <string name="stop_felix">Stop Felix Servcie</string>
+    <string name="get_bundle">Get Service Bundle</string>
+
+</resources>
