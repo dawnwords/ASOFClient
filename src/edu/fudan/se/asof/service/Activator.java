@@ -1,15 +1,16 @@
 package edu.fudan.se.asof.service;
 
 import edu.fudan.se.asof.engine.AbstractService;
+import edu.fudan.se.asof.engine.ReturnType;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 /**
  * Created by Dawnwords on 2014/4/15.
  */
-public class Activator implements AbstractService, BundleActivator {
+public class Activator extends AbstractService implements BundleActivator {
     @Override
-    public Object invoke(Object... input) {
+    public ReturnType invoke(Object... input) {
         String caller = (String) input[0];
         System.out.println("Hello " + caller + "!");
         return null;

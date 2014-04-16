@@ -6,6 +6,7 @@ import edu.fudan.se.asof.network.NetworkListener;
 import edu.fudan.se.asof.util.Log;
 import edu.fudan.se.asof.util.Parameter;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -41,21 +42,20 @@ public class Engine {
         }
     }
 
-    private void injectDependency(final Template template, final Field service, ServiceInjector injector) {
-        ServiceDescription description = service.getAnnotation(ServiceDescription.class);
-        final String bundlePath = Parameter.getInstance().getNewBundleDir().getAbsolutePath();
+    private void injectDependency(final Template template, final Field serviceField, final ServiceInjector injector) {
+        ServiceDescription description = serviceField.getAnnotation(ServiceDescription.class);
+        final String bundleDir = Parameter.getInstance().getNewBundleDir().getAbsolutePath();
 
-        new BundleFetcher(description, bundlePath, service, template, injector, new NetworkListener<BundleFetcher.Response>() {
+        new BundleFetcher(description, bundleDir, new NetworkListener<BundleFetcher.Response>() {
             @Override
             public void onSuccess(BundleFetcher.Response response) {
                 Log.debug(response.name);
                 Log.debug(response.inputMatch);
                 Log.debug(response.outputMatch);
-                ConcurrentLinkedQueue<Field> services = templateServicesMap.get(template);
-                services.remove(service);
-                if(services.size() == 0){
-                    template.orchestraServices();
-                }
+
+                String bundlePath = bundleDir + File.separator + response.name;
+                SSListener listener = new SSListener(response.inputMatch, response.outputMatch, serviceField, template);
+                injector.registerServiceListener(bundlePath, listener);
             }
 
             @Override
@@ -63,5 +63,37 @@ public class Engine {
 
             }
         }).start();
+    }
+
+    private class SSListener implements ServiceInjector.ServiceStartListener {
+
+        private int[] inputMatch, outputMatch;
+        private Field serviceField;
+        private Template template;
+
+        private SSListener(int[] inputMatch, int[] outputMatch, Field serviceField, Template template) {
+            this.inputMatch = inputMatch;
+            this.outputMatch = outputMatch;
+            this.serviceField = serviceField;
+            this.template = template;
+        }
+
+        @Override
+        public void onServiceStart(AbstractService service) {
+            try {
+                service.setInputMatch(inputMatch);
+                service.setOutputMatch(outputMatch);
+                serviceField.setAccessible(true);
+                serviceField.set(template, service);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+            ConcurrentLinkedQueue<Field> services = templateServicesMap.get(template);
+            services.remove(serviceField);
+            if (services.size() == 0) {
+                template.orchestraServices();
+            }
+        }
     }
 }

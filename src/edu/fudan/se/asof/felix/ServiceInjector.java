@@ -12,23 +12,23 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by Dawnwords on 2014/4/15.
  */
 public final class ServiceInjector extends Binder {
-    public static interface ServiceListener {
+    public static interface ServiceStartListener {
         void onServiceStart(AbstractService service);
     }
 
-    private ConcurrentHashMap<String, ServiceListener> bundleListenerMap;
+    private ConcurrentHashMap<String, ServiceStartListener> bundleListenerMap;
     private BundleContext context;
 
     ServiceInjector(BundleContext context) {
         this.context = context;
-        bundleListenerMap = new ConcurrentHashMap<String, ServiceListener>();
+        bundleListenerMap = new ConcurrentHashMap<String, ServiceStartListener>();
     }
 
-    ServiceListener getServiceListener(String bundlePath) {
+    ServiceStartListener getServiceListener(String bundlePath) {
         return bundleListenerMap.get(bundlePath);
     }
 
-    public void registerServiceListener(String bundlePath, ServiceListener listener) {
+    public void registerServiceListener(String bundlePath, ServiceStartListener listener) {
         bundleListenerMap.put(bundlePath, listener);
     }
 

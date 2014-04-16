@@ -17,6 +17,6 @@ public class TestTemplate extends Template {
 
     @Override
     public void orchestraServices() {
-        helloService.invoke("Dawnwords");
+        helloService.invokeService("Dawnwords");
     }
 }

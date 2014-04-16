@@ -1,10 +1,7 @@
 package edu.fudan.se.asof.network;
 
 
-import edu.fudan.se.asof.engine.AbstractService;
 import edu.fudan.se.asof.engine.ServiceDescription;
-import edu.fudan.se.asof.engine.Template;
-import edu.fudan.se.asof.felix.ServiceInjector;
 import edu.fudan.se.asof.util.Parameter;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -17,7 +14,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 
 import java.io.*;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,21 +21,14 @@ import java.util.List;
  * Created by Dawnwords on 2014/4/8.
  */
 public class BundleFetcher extends Thread {
-    private String bundlePath;
-    private Field serviceField;
-    private Template template;
+    private String bundleDir;
     private Request request;
-    private ServiceInjector injector;
     private NetworkListener<Response> listener;
 
-    public BundleFetcher(ServiceDescription bundleDescription, String bundlePath,
-                         Field serviceField, Template template, ServiceInjector injector,
+    public BundleFetcher(ServiceDescription bundleDescription, String bundleDir,
                          NetworkListener<Response> listener) {
-        this.serviceField = serviceField;
-        this.injector = injector;
-        this.template = template;
         this.request = constructRequest(bundleDescription);
-        this.bundlePath = bundlePath;
+        this.bundleDir = bundleDir;
         this.listener = listener;
     }
 
@@ -55,6 +44,7 @@ public class BundleFetcher extends Thread {
             if (entity != null) {
                 reader = new BufferedReader(new InputStreamReader(entity.getContent()));
                 Response bundle = Parameter.getGson().fromJson(reader, Response.class);
+                listener.onSuccess(bundle);
                 saveToFile(bundle);
             }
         } catch (Exception e) {
@@ -82,19 +72,7 @@ public class BundleFetcher extends Thread {
 
     private void saveToFile(final Response bundle) {
         FileOutputStream out = null;
-        final String bundlePath = this.bundlePath + File.separator + bundle.name;
-        injector.registerServiceListener(bundlePath, new ServiceInjector.ServiceListener() {
-            @Override
-            public void onServiceStart(AbstractService service) {
-                try {
-                    serviceField.setAccessible(true);
-                    serviceField.set(template, service);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-                listener.onSuccess(bundle);
-            }
-        });
+        final String bundlePath = this.bundleDir + File.separator + bundle.name;
 
         try {
             out = new FileOutputStream(bundlePath);

@@ -47,6 +47,5 @@ public class InitActivator implements BundleActivator {
     }
 
     public void stop(BundleContext arg0) throws Exception {
-        // TODO Auto-generated method stub
     }
 }
