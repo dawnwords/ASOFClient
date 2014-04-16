@@ -1,8 +1,6 @@
 package edu.fudan.se.asof.template;
 
-import edu.fudan.se.asof.engine.AbstractService;
-import edu.fudan.se.asof.engine.ServiceDescription;
-import edu.fudan.se.asof.engine.Template;
+import edu.fudan.se.asof.engine.*;
 
 /**
  * Created by Dawnwords on 2014/4/9.

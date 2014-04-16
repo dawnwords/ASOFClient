@@ -32,7 +32,7 @@ public final class ServiceInjector extends Binder {
         bundleListenerMap.put(bundlePath, listener);
     }
 
-    public void registerServiceListener(String bundlePath) {
+    public void deregisterServiceListener(String bundlePath) {
         bundleListenerMap.remove(bundlePath);
         Bundle bundle = context.getBundle(bundlePath);
         try {

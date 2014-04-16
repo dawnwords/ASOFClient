@@ -1,5 +1,6 @@
 package edu.fudan.se.asof.felix;
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -11,12 +12,12 @@ import org.apache.felix.framework.util.FelixConstants;
 import org.osgi.framework.*;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 public class FelixService extends Service {
-    private static final long SHUT_DOWN_WAITING_TIME = 10000;
 
     private Felix felix;
     private ServiceInjector serviceInjector;
@@ -29,9 +30,10 @@ public class FelixService extends Service {
         createInitBundleDir();
         createInstallBundleDir();
         createFelixCacheDir();
+        createTemplateDir();
 
         // activator which loads from Res and installs to files dir and starts bundles
-        InitActivator instFromR = new InitActivator(this.getResources(), getRootPath());
+        InitActivator instFromR = new InitActivator(getResources(), getRootPath());
 
         // host activator for connection host app to framework
         HostActivator hostActivator = new HostActivator();
@@ -51,10 +53,15 @@ public class FelixService extends Service {
     }
 
     @Override
+    public synchronized void onDestroy() {
+        Log.debug();
+        super.onDestroy();
+        shutdownApplication();
+    }
+
+    @Override
     public IBinder onBind(Intent intent) {
         Log.debug();
-
-        // start felix with configProps
         try {
             felix.start();
             felix.getBundleContext().addBundleListener(new BundleListener() {
@@ -66,9 +73,10 @@ public class FelixService extends Service {
                         String bundleLocation = bundle.getLocation();
                         Log.debug(bundleLocation);
                         BundleContext bundleContext = bundle.getBundleContext();
-                        ServiceReference<AbstractService> reference = (ServiceReference<AbstractService>) bundleContext.getServiceReference(AbstractService.class.getName());
-                        serviceInjector.getServiceListener(bundleLocation).onServiceStart(bundleContext.getService(reference));
-                    } else if(type == BundleEvent.STOPPED){
+                        AbstractService abstractService = (AbstractService) bundleContext.getService(bundleContext.getServiceReference(AbstractService.class.getName()));
+                        injectContext(abstractService);
+                        serviceInjector.getServiceListener(bundleLocation).onServiceStart(abstractService);
+                    } else if (type == BundleEvent.STOPPED) {
                         try {
                             bundle.uninstall();
                         } catch (BundleException e) {
@@ -85,12 +93,33 @@ public class FelixService extends Service {
         return serviceInjector;
     }
 
-    @Override
-    public synchronized void onDestroy() {
-        Log.debug();
-        super.onDestroy();
-        shutdownApplication();
-        felix = null;
+    private void injectContext(AbstractService abstractService) {
+        try {
+            Field contextField = AbstractService.class.getDeclaredField("context");
+            contextField.setAccessible(true);
+            contextField.set(abstractService, getBaseContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void shutdownApplication() {
+        try {
+            final Object lock = new Object();
+            felix.getBundleContext().addFrameworkListener(new FrameworkListener() {
+                @Override
+                public void frameworkEvent(FrameworkEvent e) {
+                    if (e.getType() == FrameworkEvent.STOPPED) {
+                        lock.notify();
+                    }
+                }
+            });
+            felix.stop();
+            lock.wait();
+            felix = null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void createInitBundleDir() {
@@ -105,6 +134,10 @@ public class FelixService extends Service {
         Parameter.getInstance().setCacheDir(createClearDir("cache"));
     }
 
+    private void createTemplateDir() {
+        Parameter.getInstance().setTemplateDir(createClearDir("template"));
+    }
+
     private File createClearDir(String name) {
         File dir = new File(getRootPath() + File.separator + "felix" + File.separator + name);
         if (dir.exists()) {
@@ -116,22 +149,8 @@ public class FelixService extends Service {
         return dir;
     }
 
-    private void shutdownApplication() {
-        // Shut down the felix framework when stopping the host application.
-        try {
-            felix.stop();
-            felix.waitForStop(SHUT_DOWN_WAITING_TIME);
-        } catch (BundleException e) {
-            e.printStackTrace();
-            Log.debug("Cannot stop HostApplication");
-        } catch (InterruptedException e) {
-            Log.debug("Thread has waited and was then interrupted");
-            e.printStackTrace();
-        }
-    }
-
     private String getRootPath() {
-        return this.getFilesDir().getAbsolutePath();
+        return getFilesDir().getAbsolutePath();
     }
 
     private void delete(File file) {

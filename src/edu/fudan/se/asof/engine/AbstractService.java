@@ -1,10 +1,13 @@
 package edu.fudan.se.asof.engine;
 
+import android.content.Context;
+
 /**
  * Created by Dawnwords on 2014/4/6.
  */
 public abstract class AbstractService {
     private int[] inputMatch, outputMatch;
+    private Context context;
 
     public ReturnType invokeService(Object... input) {
         ReturnType type = invoke(getInputAfterMatching(input));
@@ -12,6 +15,10 @@ public abstract class AbstractService {
     }
 
     protected abstract ReturnType invoke(Object... input);
+
+    protected Context getContext() {
+        return context;
+    }
 
     void setInputMatch(int[] inputMatch) {
         this.inputMatch = inputMatch;

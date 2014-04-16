@@ -1,5 +1,6 @@
 package edu.fudan.se.asof.service;
 
+import android.widget.Toast;
 import edu.fudan.se.asof.engine.AbstractService;
 import edu.fudan.se.asof.engine.ReturnType;
 import org.osgi.framework.BundleActivator;
@@ -12,7 +13,7 @@ public class Activator extends AbstractService implements BundleActivator {
     @Override
     public ReturnType invoke(Object... input) {
         String caller = (String) input[0];
-        System.out.println("Hello " + caller + "!");
+        Toast.makeText(getContext(),"Hello " + caller,Toast.LENGTH_SHORT).show();
         return null;
     }
 

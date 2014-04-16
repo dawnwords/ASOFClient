@@ -1,5 +1,6 @@
 package edu.fudan.se.asof.engine;
 
+import android.os.Handler;
 import edu.fudan.se.asof.felix.ServiceInjector;
 import edu.fudan.se.asof.network.BundleFetcher;
 import edu.fudan.se.asof.network.NetworkListener;
@@ -37,12 +38,13 @@ public class Engine {
             }
         }
 
+        Handler handler = new Handler();
         for (Field service : services) {
-            injectDependency(template, service, injector);
+            injectDependency(template, service, injector, handler);
         }
     }
 
-    private void injectDependency(final Template template, final Field serviceField, final ServiceInjector injector) {
+    private void injectDependency(final Template template, final Field serviceField, final ServiceInjector injector, final Handler handler) {
         ServiceDescription description = serviceField.getAnnotation(ServiceDescription.class);
         final String bundleDir = Parameter.getInstance().getNewBundleDir().getAbsolutePath();
 
@@ -54,7 +56,7 @@ public class Engine {
                 Log.debug(response.outputMatch);
 
                 String bundlePath = bundleDir + File.separator + response.name;
-                SSListener listener = new SSListener(response.inputMatch, response.outputMatch, serviceField, template);
+                SSListener listener = new SSListener(response.inputMatch, response.outputMatch, serviceField, template, handler);
                 injector.registerServiceListener(bundlePath, listener);
             }
 
@@ -70,12 +72,14 @@ public class Engine {
         private int[] inputMatch, outputMatch;
         private Field serviceField;
         private Template template;
+        private Handler handler;
 
-        private SSListener(int[] inputMatch, int[] outputMatch, Field serviceField, Template template) {
+        private SSListener(int[] inputMatch, int[] outputMatch, Field serviceField, Template template, Handler handler) {
             this.inputMatch = inputMatch;
             this.outputMatch = outputMatch;
             this.serviceField = serviceField;
             this.template = template;
+            this.handler = handler;
         }
 
         @Override
@@ -92,7 +96,12 @@ public class Engine {
             ConcurrentLinkedQueue<Field> services = templateServicesMap.get(template);
             services.remove(serviceField);
             if (services.size() == 0) {
-                template.orchestraServices();
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        template.orchestraServices();
+                    }
+                });
             }
         }
     }

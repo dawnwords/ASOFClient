@@ -1,6 +1,5 @@
 package edu.fudan.se.asof.util;
 
-import android.util.Log;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -14,7 +13,7 @@ public class Parameter {
     private static Parameter ourInstance = new Parameter();
     private static Gson gson;
 
-    private File initBundleDir, newBundleDir, cacheDir;
+    private File initBundleDir, newBundleDir, cacheDir, templateDir;
 
     public static Gson getGson() {
         return gson;
@@ -23,7 +22,6 @@ public class Parameter {
     public static Parameter getInstance() {
         return ourInstance;
     }
-
 
 
     private Parameter() {
@@ -52,5 +50,13 @@ public class Parameter {
 
     public void setCacheDir(File cacheDir) {
         this.cacheDir = cacheDir;
+    }
+
+    public File getTemplateDir() {
+        return templateDir;
+    }
+
+    public void setTemplateDir(File templateDir) {
+        this.templateDir = templateDir;
     }
 }
