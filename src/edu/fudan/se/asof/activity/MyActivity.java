@@ -69,7 +69,12 @@ public class MyActivity extends Activity {
         try {
             Class<Template> templateClass = (Class<Template>) Class.forName("edu.fudan.se.asof.template.TestTemplate");
             Template template = templateClass.newInstance();
-            Engine.getInstance().interpretTemplate(template, injector);
+
+            Engine.ParamPackage param = new Engine.ParamPackage();
+            param.injector = injector;
+            param.template = template;
+            param.context = this;
+            Engine.getInstance().interpretTemplate(param);
         } catch (Exception e) {
             e.printStackTrace();
         }

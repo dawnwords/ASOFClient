@@ -4,5 +4,7 @@
     <string name="start_felix">Start Felix Servcie</string>
     <string name="stop_felix">Stop Felix Servcie</string>
     <string name="get_bundle">Get Service Bundle</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

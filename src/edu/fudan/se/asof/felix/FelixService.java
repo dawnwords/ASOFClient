@@ -70,12 +70,12 @@ public class FelixService extends Service {
                     Bundle bundle = bundleEvent.getBundle();
                     int type = bundleEvent.getType();
                     if (type == BundleEvent.STARTED) {
-                        String bundleLocation = bundle.getLocation();
-                        Log.debug(bundleLocation);
+                        String bundleName = new File(bundle.getLocation()).getName();
+                        Log.debug(bundleName);
                         BundleContext bundleContext = bundle.getBundleContext();
                         AbstractService abstractService = (AbstractService) bundleContext.getService(bundleContext.getServiceReference(AbstractService.class.getName()));
                         injectContext(abstractService);
-                        serviceInjector.getServiceListener(bundleLocation).onServiceStart(abstractService);
+                        serviceInjector.getServiceListener(bundleName).onServiceStart(abstractService);
                     } else if (type == BundleEvent.STOPPED) {
                         try {
                             bundle.uninstall();
