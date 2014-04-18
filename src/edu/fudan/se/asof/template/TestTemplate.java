@@ -15,11 +15,7 @@ public class TestTemplate extends Template {
 
     @Override
     public void orchestraServices() {
-        requestUserInput("Input Your Name", new OnUserInputListener() {
-            @Override
-            public void onUserInput(String userName) {
-                helloService.invokeService(userName);
-            }
-        });
+        String userName = requestUserInput("Input Your Name");
+        helloService.invokeService(userName);
     }
 }

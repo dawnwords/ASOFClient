@@ -1,9 +1,10 @@
 package edu.fudan.se.asof.felix;
 
-import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import edu.fudan.se.asof.engine.AbstractService;
 import edu.fudan.se.asof.util.Log;
 import edu.fudan.se.asof.util.Parameter;
@@ -20,6 +21,7 @@ import java.util.Properties;
 public class FelixService extends Service {
 
     private Felix felix;
+    private Handler handler;
     private ServiceInjector serviceInjector;
 
     @Override
@@ -49,6 +51,7 @@ public class FelixService extends Service {
         configuration.put(FelixConstants.SYSTEMBUNDLE_ACTIVATORS_PROP, activatorList);
 
         felix = new Felix(configuration);
+        handler = new Handler(Looper.getMainLooper());
         serviceInjector = new ServiceInjector(felix.getBundleContext());
     }
 
@@ -74,7 +77,8 @@ public class FelixService extends Service {
                         Log.debug(bundleName);
                         BundleContext bundleContext = bundle.getBundleContext();
                         AbstractService abstractService = (AbstractService) bundleContext.getService(bundleContext.getServiceReference(AbstractService.class.getName()));
-                        injectContext(abstractService);
+                        injectServiceField(abstractService, "context", getBaseContext());
+                        injectServiceField(abstractService, "uiHandler", handler);
                         serviceInjector.getServiceListener(bundleName).onServiceStart(abstractService);
                     } else if (type == BundleEvent.STOPPED) {
                         try {
@@ -93,15 +97,16 @@ public class FelixService extends Service {
         return serviceInjector;
     }
 
-    private void injectContext(AbstractService abstractService) {
+    private void injectServiceField(AbstractService abstractService, String fieldName, Object value) {
         try {
-            Field contextField = AbstractService.class.getDeclaredField("context");
+            Field contextField = AbstractService.class.getDeclaredField(fieldName);
             contextField.setAccessible(true);
-            contextField.set(abstractService, getBaseContext());
+            contextField.set(abstractService, value);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     private void shutdownApplication() {
         try {

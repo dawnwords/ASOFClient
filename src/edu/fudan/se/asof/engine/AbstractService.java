@@ -1,6 +1,7 @@
 package edu.fudan.se.asof.engine;
 
 import android.content.Context;
+import android.os.Handler;
 
 /**
  * Created by Dawnwords on 2014/4/6.
@@ -8,6 +9,7 @@ import android.content.Context;
 public abstract class AbstractService {
     private int[] inputMatch, outputMatch;
     private Context context;
+    private Handler uiHandler;
 
     public ReturnType invokeService(Object... input) {
         ReturnType type = invoke(getInputAfterMatching(input));
@@ -18,6 +20,10 @@ public abstract class AbstractService {
 
     protected Context getContext() {
         return context;
+    }
+
+    protected void postUIRunnable(Runnable runnable) {
+        uiHandler.post(runnable);
     }
 
     void setInputMatch(int[] inputMatch) {

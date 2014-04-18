@@ -12,8 +12,14 @@ import org.osgi.framework.BundleContext;
 public class Activator extends AbstractService implements BundleActivator {
     @Override
     public ReturnType invoke(Object... input) {
-        String caller = (String) input[0];
-        Toast.makeText(getContext(),"Hello " + caller,Toast.LENGTH_SHORT).show();
+        final String caller = (String) input[0];
+
+        postUIRunnable(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getContext(),"Hello " + caller,Toast.LENGTH_SHORT).show();
+            }
+        });
         return null;
     }
 

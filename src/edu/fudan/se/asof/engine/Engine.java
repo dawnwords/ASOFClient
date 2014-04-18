@@ -2,6 +2,7 @@ package edu.fudan.se.asof.engine;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import edu.fudan.se.asof.felix.ServiceInjector;
 import edu.fudan.se.asof.network.BundleFetcher;
 import edu.fudan.se.asof.network.NetworkListener;
@@ -47,7 +48,7 @@ public class Engine {
             }
         }
 
-        param.handler = new Handler();
+        param.handler = new Handler(Looper.getMainLooper());
         for (Field service : services) {
             param.serviceField = service;
             injectDependency(param);
@@ -105,22 +106,19 @@ public class Engine {
             ConcurrentLinkedQueue<Field> services = templateServicesMap.get(param.template);
             services.remove(param.serviceField);
             if (services.size() == 0) {
+                injectTemplateField("context", param.context);
+                injectTemplateField("uiHandler", param.handler);
+                param.template.orchestraServices();
+            }
+        }
 
-                Field templateContext = null;
-                try {
-                    templateContext = Template.class.getDeclaredField("context");
-                    templateContext.setAccessible(true);
-                    templateContext.set(param.template, param.context);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                param.handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        param.template.orchestraServices();
-                    }
-                });
+        private void injectTemplateField(String fieldName, Object value) {
+            try {
+                Field templateContext = Template.class.getDeclaredField(fieldName);
+                templateContext.setAccessible(true);
+                templateContext.set(param.template, value);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
