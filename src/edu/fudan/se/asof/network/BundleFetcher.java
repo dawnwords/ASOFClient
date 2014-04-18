@@ -37,7 +37,7 @@ public class BundleFetcher extends Thread {
         BufferedReader reader = null;
         try {
             HttpClient httpclient = new DefaultHttpClient();
-            HttpPost httpPost = new HttpPost(Parameter.BUNDLE_DOWNLOAD_SERVER_URL);
+            HttpPost httpPost = new HttpPost(Parameter.BUNDLE_DOWNLOAD_URL);
             httpPost.setEntity(new UrlEncodedFormEntity(getRequestNVPairs(), HTTP.UTF_8));
             HttpResponse response = httpclient.execute(httpPost);
             HttpEntity entity = response.getEntity();

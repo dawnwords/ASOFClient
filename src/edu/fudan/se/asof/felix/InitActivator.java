@@ -2,48 +2,36 @@ package edu.fudan.se.asof.felix;
 
 import android.content.res.Resources;
 import edu.fudan.se.asof.R;
+import edu.fudan.se.asof.util.Parameter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-import java.io.InputStream;
+import java.io.File;
 
 public class InitActivator implements BundleActivator {
 
-    private String fileRootPath = "";
     private Resources res;
 
-    public InitActivator(Resources res, String fileRootPath) {
+    public InitActivator(Resources res) {
         this.res = res;
-        this.fileRootPath = fileRootPath;
     }
 
-    public void start(BundleContext arg0) throws Exception {
-        // get from R and install to apps private files dir
-        InputStream is = res.openRawResource(R.raw.bundlerepository);
-        Bundle bundlebundlerepository = arg0.installBundle(fileRootPath + "/felix/bundle/bundlerepository.jar", is);
+    public void start(BundleContext context) throws Exception {
+        startInitBundle(context, R.raw.bundlerepository, "bundlerepository.jar");
+        startInitBundle(context, R.raw.shell, "shell.jar");
+        startInitBundle(context, R.raw.ipojo, "ipojo.jar");
+        startInitBundle(context, R.raw.ipojoannotations, "ipojoannotations.jar");
+        startInitBundle(context, R.raw.ipojoarch, "ipojoarch.jar");
+        startInitBundle(context, R.raw.fileinstall130, "fileinstall130.jar");
+    }
 
-        is = res.openRawResource(R.raw.shell);
-        Bundle bundleshell = arg0.installBundle(fileRootPath + "/felix/bundle/shell.jar", is);
 
-        is = res.openRawResource(R.raw.ipojo);
-        Bundle bundleipojo = arg0.installBundle(fileRootPath + "/felix/bundle/ipojo.jar", is);
-
-        is = res.openRawResource(R.raw.ipojoannotations);
-        Bundle bundleipojoannotations = arg0.installBundle(fileRootPath + "/felix/bundle/ipojoannotations.jar", is);
-
-        is = res.openRawResource(R.raw.ipojoarch);
-        Bundle bundleipojoarch = arg0.installBundle(fileRootPath + "/felix/bundle/ipojoarch.jar", is);
-
-        is = res.openRawResource(R.raw.fileinstall130);
-        Bundle bundlefileinstall130 = arg0.installBundle(fileRootPath + "/felix/bundle/fileinstall130.jar", is);
-
-        bundleshell.start();
-        bundlebundlerepository.start();
-        bundleipojo.start();
-        bundleipojoannotations.start();
-        bundleipojoarch.start();
-        bundlefileinstall130.start();
+    private void startInitBundle(BundleContext context, int rawId, String jarName) throws Exception {
+        String bundlePath = Parameter.getInstance().getInitBundleDir().getAbsolutePath()
+                + File.separator + jarName;
+        Bundle bundle = context.installBundle(bundlePath, res.openRawResource(rawId));
+        bundle.start();
     }
 
     public void stop(BundleContext arg0) throws Exception {

@@ -8,12 +8,19 @@ import java.io.File;
  * Created by Dawnwords on 2014/4/12.
  */
 public class Parameter {
-    public static final String BUNDLE_DOWNLOAD_SERVER_URL = "http://10.131.253.211:8080/BundleService/BundleServlet";
+    private static final String SERVER_BASE_URL = "http://10.131.253.211:8080/BundleService/";
+    public static final String BUNDLE_DOWNLOAD_URL = SERVER_BASE_URL + "BundleServlet";
+    public static final String TEMPLATE_LIST_URL = SERVER_BASE_URL + "ListTemplate";
+    public static final String TEMPLATE_DOWNLOAD_URL = SERVER_BASE_URL + "TemplateServlet";
 
     private static Parameter ourInstance = new Parameter();
     private static Gson gson;
 
-    private File initBundleDir, newBundleDir, cacheDir, templateDir;
+    private File initBundleDir;
+    private File newBundleDir;
+    private File cacheDir;
+    private File templateDir;
+    private File optimizedDir;
 
     public static Gson getGson() {
         return gson;
@@ -58,5 +65,13 @@ public class Parameter {
 
     public void setTemplateDir(File templateDir) {
         this.templateDir = templateDir;
+    }
+
+    public File getOptimizedDir() {
+        return optimizedDir;
+    }
+
+    public void setOptimizedDir(File optimizedDir) {
+        this.optimizedDir = optimizedDir;
     }
 }

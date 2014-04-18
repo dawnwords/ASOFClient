@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Handler;
+import android.text.Editable;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -33,9 +34,8 @@ public abstract class Template {
                         .setPositiveButton(R.string.ok, new OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                if (input.getText() != null) {
-                                    result.set(input.getText().toString());
-                                }
+                                Editable text = input.getText();
+                                result.set(text == null ? "" : text.toString());
                             }
                         }).create().show();
             }

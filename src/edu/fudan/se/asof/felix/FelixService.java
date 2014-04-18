@@ -34,20 +34,10 @@ public class FelixService extends Service {
         createFelixCacheDir();
         createTemplateDir();
 
-        // activator which loads from Res and installs to files dir and starts bundles
-        InitActivator instFromR = new InitActivator(getResources(), getRootPath());
-
-        // host activator for connection host app to framework
-        HostActivator hostActivator = new HostActivator();
-
         List<BundleActivator> activatorList = new ArrayList<BundleActivator>();
-        activatorList.add(hostActivator);
-        activatorList.add(instFromR);
+        activatorList.add(new InitActivator(getResources()));
 
-        // load Properties (from class, not from config.properties here)
         Properties configuration = new FelixConfig(getRootPath()).getConfiguration();
-
-        // add list of activators which shall be started with system bundle to config
         configuration.put(FelixConstants.SYSTEMBUNDLE_ACTIVATORS_PROP, activatorList);
 
         felix = new Felix(configuration);
@@ -128,7 +118,7 @@ public class FelixService extends Service {
     }
 
     private void createInitBundleDir() {
-        Parameter.getInstance().setCacheDir(createClearDir("bundle"));
+        Parameter.getInstance().setInitBundleDir(createClearDir("bundle"));
     }
 
     private void createInstallBundleDir() {
