@@ -33,6 +33,7 @@ public class FelixService extends Service {
         createInstallBundleDir();
         createFelixCacheDir();
         createTemplateDir();
+        createOptimizedDir();
 
         List<BundleActivator> activatorList = new ArrayList<BundleActivator>();
         activatorList.add(new InitActivator(getResources()));
@@ -132,6 +133,8 @@ public class FelixService extends Service {
     private void createTemplateDir() {
         Parameter.getInstance().setTemplateDir(createClearDir("template"));
     }
+
+    private void createOptimizedDir() {Parameter.getInstance().setOptimizedDir(createClearDir("optimized"));}
 
     private File createClearDir(String name) {
         File dir = new File(getRootPath() + File.separator + "felix" + File.separator + name);

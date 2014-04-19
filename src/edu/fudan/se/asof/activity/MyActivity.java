@@ -8,17 +8,26 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ListView;
 import edu.fudan.se.asof.R;
 import edu.fudan.se.asof.engine.Engine;
-import edu.fudan.se.asof.engine.Template;
 import edu.fudan.se.asof.felix.FelixService;
 import edu.fudan.se.asof.felix.ServiceInjector;
+import edu.fudan.se.asof.network.NetworkListener;
+import edu.fudan.se.asof.network.TemplateDownloadListener;
+import edu.fudan.se.asof.network.TemplateFetcher;
+import edu.fudan.se.asof.network.TemplateListFetcher;
+import edu.fudan.se.asof.ui.TemplateAdapter;
 import edu.fudan.se.asof.util.Log;
+
+import java.util.Arrays;
 
 public class MyActivity extends Activity {
 
-    private Button getBundle, controlFelix;
+    private Button getTemplateList, controlFelix;
+    private TemplateAdapter adapter;
     private ServiceInjector injector;
 
     private ServiceConnection conn = new ServiceConnection() {
@@ -26,14 +35,14 @@ public class MyActivity extends Activity {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.debug();
             controlFelix.setText(R.string.stop_felix);
-            getBundle.setEnabled(true);
+            getTemplateList.setEnabled(true);
             injector = (ServiceInjector) iBinder;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             controlFelix.setText(R.string.start_felix);
-            getBundle.setEnabled(false);
+            getTemplateList.setEnabled(false);
             Log.debug();
         }
     };
@@ -45,8 +54,26 @@ public class MyActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        getBundle = (Button) findViewById(R.id.get_bundle);
+        getTemplateList = (Button) findViewById(R.id.get_template_list);
         controlFelix = (Button) findViewById(R.id.felix_control);
+        adapter = new TemplateAdapter(this);
+        initTemplateList();
+    }
+
+    private void initTemplateList() {
+        ListView templateList = (ListView) findViewById(R.id.template_list);
+        templateList.setAdapter(adapter);
+        templateList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String name = adapter.getItem(position).file;
+                Engine.ParamPackage param = new Engine.ParamPackage();
+                param.injector = injector;
+                param.context = MyActivity.this;
+                TemplateDownloadListener listener = new TemplateDownloadListener(name, param);
+                new TemplateFetcher(name, listener).start();
+            }
+        });
     }
 
     @Override
@@ -56,7 +83,7 @@ public class MyActivity extends Activity {
     }
 
     public void controlFelix(View v) {
-        if (getBundle.isEnabled()) {
+        if (getTemplateList.isEnabled()) {
             unbindService(conn);
         } else {
             Intent intent = new Intent(this, FelixService.class);
@@ -65,18 +92,18 @@ public class MyActivity extends Activity {
         }
     }
 
-    public void getBundle(View v) {
-        try {
-            Class<Template> templateClass = (Class<Template>) Class.forName("edu.fudan.se.asof.template.HelloTemplate");
-            Template template = templateClass.newInstance();
+    public void getTemplates(View view) {
+        new TemplateListFetcher(new NetworkListener<TemplateListFetcher.Response[]>() {
+            @Override
+            public void onSuccess(TemplateListFetcher.Response[] data) {
+                adapter.setTemplates(Arrays.asList(data));
+            }
 
-            Engine.ParamPackage param = new Engine.ParamPackage();
-            param.injector = injector;
-            param.template = template;
-            param.context = this;
-            Engine.getInstance().interpretTemplate(param);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            @Override
+            public void onFailure(String reason) {
+
+            }
+        }).start();
     }
+
 }
