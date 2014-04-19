@@ -10,7 +10,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import edu.fudan.se.asof.R;
 
 /**
  * Created by Dawnwords on 2014/4/8.
@@ -31,7 +30,7 @@ public abstract class Template {
                 input.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
                 getBuilder(message).setView(input)
-                        .setPositiveButton(R.string.ok, new OnClickListener() {
+                        .setPositiveButton("OK", new OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Editable text = input.getText();
@@ -51,13 +50,13 @@ public abstract class Template {
                 TextView messageTextView = new TextView(context);
                 messageTextView.setText(message);
                 getBuilder("Confirm").setView(messageTextView)
-                        .setPositiveButton(R.string.ok, new OnClickListener() {
+                        .setPositiveButton("OK", new OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 result.set(true);
                             }
                         })
-                        .setNegativeButton(R.string.cancel, new OnClickListener() {
+                        .setNegativeButton("Cancel", new OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 result.set(false);

@@ -2,64 +2,39 @@ package edu.fudan.se.asof.network;
 
 
 import edu.fudan.se.asof.engine.ServiceDescription;
+import edu.fudan.se.asof.util.IOUtil;
 import edu.fudan.se.asof.util.Parameter;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 
-import java.io.*;
-import java.util.ArrayList;
+import java.io.File;
 import java.util.List;
 
 /**
  * Created by Dawnwords on 2014/4/8.
  */
-public class BundleFetcher extends Thread {
+public class BundleFetcher extends NetworkThread<BundleFetcher.Response> {
     private String bundleDir;
     private Request request;
-    private NetworkListener<Response> listener;
 
     public BundleFetcher(ServiceDescription bundleDescription, String bundleDir,
                          NetworkListener<Response> listener) {
+        super(listener,Response.class,Parameter.BUNDLE_DOWNLOAD_URL);
         this.request = constructRequest(bundleDescription);
         this.bundleDir = bundleDir;
-        this.listener = listener;
     }
 
     @Override
-    public void run() {
-        BufferedReader reader = null;
-        try {
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpPost httpPost = new HttpPost(Parameter.BUNDLE_DOWNLOAD_URL);
-            httpPost.setEntity(new UrlEncodedFormEntity(getRequestNVPairs(), HTTP.UTF_8));
-            HttpResponse response = httpclient.execute(httpPost);
-            HttpEntity entity = response.getEntity();
-            if (entity != null) {
-                reader = new BufferedReader(new InputStreamReader(entity.getContent()));
-                Response bundle = Parameter.getGson().fromJson(reader, Response.class);
-                listener.onSuccess(bundle);
-                saveToFile(bundle);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            listener.onFailure(e.getMessage());
-        } finally {
-            close(reader);
-        }
-    }
-
-    private List<NameValuePair> getRequestNVPairs() {
-        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+    protected void setNameValuePair(List<NameValuePair> nameValuePairs) {
         String json = Parameter.getGson().toJson(request, Request.class);
         nameValuePairs.add(new BasicNameValuePair("service_description", json));
-        return nameValuePairs;
+    }
+
+    @Override
+    protected void postExecute(Response bundle) {
+        super.postExecute(bundle);
+        String bundlePath = this.bundleDir + File.separator + bundle.name;
+        IOUtil.saveToFile(bundlePath, bundle.bundleFile);
     }
 
     private Request constructRequest(ServiceDescription bundleDescription) {
@@ -68,32 +43,6 @@ public class BundleFetcher extends Thread {
         result.input = bundleDescription.input();
         result.output = bundleDescription.output();
         return result;
-    }
-
-    private void saveToFile(final Response bundle) {
-        FileOutputStream out = null;
-        final String bundlePath = this.bundleDir + File.separator + bundle.name;
-
-        try {
-            out = new FileOutputStream(bundlePath);
-            out.write(bundle.bundleFile);
-            out.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            close(out);
-            bundle.bundleFile = null;
-        }
-    }
-
-    private void close(Closeable closeable) {
-        try {
-            if (closeable != null) {
-                closeable.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public static class Response {

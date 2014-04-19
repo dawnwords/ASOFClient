@@ -67,7 +67,7 @@ public class MyActivity extends Activity {
 
     public void getBundle(View v) {
         try {
-            Class<Template> templateClass = (Class<Template>) Class.forName("edu.fudan.se.asof.template.TestTemplate");
+            Class<Template> templateClass = (Class<Template>) Class.forName("edu.fudan.se.asof.template.HelloTemplate");
             Template template = templateClass.newInstance();
 
             Engine.ParamPackage param = new Engine.ParamPackage();

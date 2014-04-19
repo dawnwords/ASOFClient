@@ -10,7 +10,7 @@ import java.io.File;
 public class Parameter {
     private static final String SERVER_BASE_URL = "http://10.131.253.211:8080/BundleService/";
     public static final String BUNDLE_DOWNLOAD_URL = SERVER_BASE_URL + "BundleServlet";
-    public static final String TEMPLATE_LIST_URL = SERVER_BASE_URL + "ListTemplate";
+    public static final String TEMPLATE_LIST_URL = SERVER_BASE_URL + "ListTemplateServlet";
     public static final String TEMPLATE_DOWNLOAD_URL = SERVER_BASE_URL + "TemplateServlet";
 
     private static Parameter ourInstance = new Parameter();
@@ -29,7 +29,6 @@ public class Parameter {
     public static Parameter getInstance() {
         return ourInstance;
     }
-
 
     private Parameter() {
         gson = new Gson();
