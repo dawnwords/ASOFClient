@@ -47,7 +47,7 @@ public class BundleFetcher extends NetworkThread<BundleFetcher.Response> {
 
     public static class Response {
         public int[] inputMatch, outputMatch;
-        public String name;
+        public String name, activityClass;
         private byte[] bundleFile;
     }
 

@@ -95,6 +95,9 @@ public class Engine {
         @Override
         public void onServiceStart(AbstractService service) {
             try {
+                service.setContext(param.context);
+                service.setUiHandler(param.handler);
+                service.setActivityClass(param.response.activityClass);
                 service.setInputMatch(param.response.inputMatch);
                 service.setOutputMatch(param.response.outputMatch);
                 param.serviceField.setAccessible(true);

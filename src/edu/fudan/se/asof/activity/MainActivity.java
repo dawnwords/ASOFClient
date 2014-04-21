@@ -24,7 +24,7 @@ import edu.fudan.se.asof.util.Log;
 
 import java.util.Arrays;
 
-public class MyActivity extends Activity {
+public class MainActivity extends Activity {
 
     private Button getTemplateList, controlFelix;
     private TemplateAdapter adapter;
@@ -69,7 +69,7 @@ public class MyActivity extends Activity {
                 String name = adapter.getItem(position).file;
                 Engine.ParamPackage param = new Engine.ParamPackage();
                 param.injector = injector;
-                param.context = MyActivity.this;
+                param.context = MainActivity.this;
                 TemplateDownloadListener listener = new TemplateDownloadListener(name, param);
                 new TemplateFetcher(name, listener).start();
             }

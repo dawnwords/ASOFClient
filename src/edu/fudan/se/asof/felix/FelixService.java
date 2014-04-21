@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import edu.fudan.se.asof.engine.AbstractService;
+import edu.fudan.se.asof.engine.ResultHolder;
 import edu.fudan.se.asof.util.Log;
 import edu.fudan.se.asof.util.Parameter;
 import org.apache.felix.framework.Felix;
@@ -13,7 +14,6 @@ import org.apache.felix.framework.util.FelixConstants;
 import org.osgi.framework.*;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -68,8 +68,6 @@ public class FelixService extends Service {
                         Log.debug(bundleName);
                         BundleContext bundleContext = bundle.getBundleContext();
                         AbstractService abstractService = (AbstractService) bundleContext.getService(bundleContext.getServiceReference(AbstractService.class.getName()));
-                        injectServiceField(abstractService, "context", getBaseContext());
-                        injectServiceField(abstractService, "uiHandler", handler);
                         serviceInjector.getServiceListener(bundleName).onServiceStart(abstractService);
                     } else if (type == BundleEvent.STOPPED) {
                         try {
@@ -88,30 +86,19 @@ public class FelixService extends Service {
         return serviceInjector;
     }
 
-    private void injectServiceField(AbstractService abstractService, String fieldName, Object value) {
-        try {
-            Field contextField = AbstractService.class.getDeclaredField(fieldName);
-            contextField.setAccessible(true);
-            contextField.set(abstractService, value);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
     private void shutdownApplication() {
         try {
-            final Object lock = new Object();
+            final ResultHolder<Void> lock = new ResultHolder<Void>();
             felix.getBundleContext().addFrameworkListener(new FrameworkListener() {
                 @Override
                 public void frameworkEvent(FrameworkEvent e) {
                     if (e.getType() == FrameworkEvent.STOPPED) {
-                        lock.notify();
+                        lock.set(null);
                     }
                 }
             });
             felix.stop();
-            lock.wait();
+            lock.get();
             felix = null;
         } catch (Exception e) {
             e.printStackTrace();

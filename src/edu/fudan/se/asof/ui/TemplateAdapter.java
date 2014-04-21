@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import edu.fudan.se.asof.R;
-import edu.fudan.se.asof.activity.MyActivity;
+import edu.fudan.se.asof.activity.MainActivity;
 import edu.fudan.se.asof.network.TemplateListFetcher;
 
 import java.util.LinkedList;
@@ -19,7 +19,7 @@ public class TemplateAdapter extends BaseAdapter {
 
     private Activity activity;
 
-    public TemplateAdapter(MyActivity activity) {
+    public TemplateAdapter(MainActivity activity) {
         this.activity = activity;
     }
 
