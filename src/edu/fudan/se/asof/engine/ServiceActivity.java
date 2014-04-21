@@ -3,6 +3,7 @@ package edu.fudan.se.asof.engine;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -51,10 +52,6 @@ public abstract class ServiceActivity {
     public void onTouchEvent(MotionEvent event) {
     }
 
-    protected View findViewById(int id) {
-        return activity.findViewById(id);
-    }
-
     protected void finish() {
         activity.finish();
     }
@@ -63,12 +60,20 @@ public abstract class ServiceActivity {
         activity.addContentView(view, params);
     }
 
+    protected void setContentView(View view) {
+        activity.setContentView(view);
+    }
+
     protected void setContentView(View view, ViewGroup.LayoutParams params) {
         activity.setContentView(view, params);
     }
 
     protected Context getContext() {
         return activity;
+    }
+
+    protected Context getApplicationContext() {
+        return activity.getApplicationContext();
     }
 
     protected LayoutInflater getLayoutInflater() {
@@ -83,8 +88,11 @@ public abstract class ServiceActivity {
         return activity.getSystemService(name);
     }
 
-    protected Intent getIntent() {
-        return activity.getIntent();
+    protected Object getParameter(String name) {
+        return activity.getIntent().getBundleExtra(AdapterActivity.EXTRA_BUNDLE).get(name);
     }
 
+    protected PackageManager getPackageManager() {
+        return activity.getPackageManager();
+    }
 }

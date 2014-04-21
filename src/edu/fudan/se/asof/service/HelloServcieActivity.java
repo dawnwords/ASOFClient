@@ -1,6 +1,7 @@
 package edu.fudan.se.asof.service;
 
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 import edu.fudan.se.asof.engine.ServiceActivity;
@@ -12,11 +13,12 @@ public class HelloServcieActivity extends ServiceActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        String caller = getIntent().getStringExtra("caller");
+        String caller = (String) getParameter("caller");
         TextView hello = new TextView(getContext());
-        hello.setText(caller);
+        hello.setText("Hello " + caller + "!");
         hello.setTextSize(20);
-        System.out.println("setContentView");
-        setContentView(hello, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        hello.setGravity(Gravity.CENTER);
+        hello.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        setContentView(hello);
     }
 }
