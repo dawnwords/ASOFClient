@@ -12,8 +12,6 @@ import android.widget.RelativeLayout.LayoutParams;
 import edu.fudan.se.asof.engine.Log;
 import edu.fudan.se.asof.engine.ServiceActivity;
 
-import java.io.IOException;
-
 /**
  * Created by Dawnwords on 2014/4/21.
  */
@@ -59,19 +57,13 @@ public class CameraActivity extends ServiceActivity implements SurfaceHolder.Cal
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        Log.debug();
-        try {
-            Camera.Parameters params = camera.getParameters();
-            Camera.Size selected = params.getSupportedPreviewSizes().get(0);
-            Log.debug(String.format("width:%d,height:%d", selected.width, selected.height));
-            params.setPreviewSize(selected.width, selected.height);
-            camera.setParameters(params);
-            camera.setPreviewDisplay(preview.getHolder());
-            camera.setDisplayOrientation(90);
-            camera.startPreview();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Camera.Parameters params = camera.getParameters();
+        Camera.Size selected = params.getSupportedPreviewSizes().get(0);
+        Log.debug(String.format("width:%d,height:%d", selected.width, selected.height));
+        params.setPreviewSize(selected.width, selected.height);
+        camera.setParameters(params);
+        camera.setDisplayOrientation(90);
+        camera.startPreview();
     }
 
     @Override
@@ -86,7 +78,6 @@ public class CameraActivity extends ServiceActivity implements SurfaceHolder.Cal
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-
         Log.debug();
         if (camera != null) {
             camera.stopPreview();

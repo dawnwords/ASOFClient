@@ -52,11 +52,15 @@ public abstract class ServiceActivity {
     public void onTouchEvent(MotionEvent event) {
     }
 
-    public void finish() {
+    public void runOnUiThread(Runnable r) {
+        activity.runOnUiThread(r);
+    }
+
+    protected void finish() {
         activity.finish();
     }
 
-    public void finish(Object value) {
+    protected void finish(Object value) {
         Log.debug(value.toString());
         finish();
         ResultHolder holder = ActivityResult.getInstance().getServiceActivityResultHolder();
@@ -66,47 +70,48 @@ public abstract class ServiceActivity {
         holder.set(value);
     }
 
-    public void addContentView(View view, ViewGroup.LayoutParams params) {
+    protected void addContentView(View view, ViewGroup.LayoutParams params) {
         activity.addContentView(view, params);
     }
 
-    public void setContentView(View view) {
+    protected void setContentView(View view) {
         activity.setContentView(view);
     }
 
-    public void setContentView(View view, ViewGroup.LayoutParams params) {
+    protected void setContentView(View view, ViewGroup.LayoutParams params) {
         activity.setContentView(view, params);
     }
 
-    public Context getContext() {
+    protected Context getContext() {
         return activity;
     }
 
-    public Context getApplicationContext() {
+    protected Context getApplicationContext() {
         return activity.getApplicationContext();
     }
 
-    public LayoutInflater getLayoutInflater() {
+    protected LayoutInflater getLayoutInflater() {
         return activity.getLayoutInflater();
     }
 
-    public Resources getResources() {
+    protected Resources getResources() {
         return activity.getResources();
     }
 
-    public Object getSystemService(String name) {
+    protected Object getSystemService(String name) {
         return activity.getSystemService(name);
     }
 
-    public Object getParameter(String name) {
+    protected Object getParameter(String name) {
         return activity.getIntent().getBundleExtra(AdapterActivity.EXTRA_BUNDLE).get(name);
     }
 
-    public PackageManager getPackageManager() {
+    protected PackageManager getPackageManager() {
         return activity.getPackageManager();
     }
 
-    public void runOnUiThread(Runnable r) {
-        activity.runOnUiThread(r);
+    protected int dp2px(float dp) {
+        float scale = getResources().getDisplayMetrics().density;
+        return (int) (dp * scale + 0.5f);
     }
 }
