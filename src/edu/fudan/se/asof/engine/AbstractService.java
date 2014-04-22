@@ -7,6 +7,8 @@ import android.os.Handler;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
+import java.util.Arrays;
+
 /**
  * Created by Dawnwords on 2014/4/6.
  */
@@ -17,6 +19,7 @@ public abstract class AbstractService implements BundleActivator {
     private Handler uiHandler;
 
     public ReturnType invokeService(Object... input) {
+        Log.debug(Arrays.toString(input));
         ReturnType type = invoke(getInputAfterMatching(input));
         return type == null ? null : type.getMatched(outputMatch);
     }

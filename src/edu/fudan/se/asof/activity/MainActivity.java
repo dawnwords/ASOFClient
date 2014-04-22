@@ -20,7 +20,7 @@ import edu.fudan.se.asof.network.TemplateDownloadListener;
 import edu.fudan.se.asof.network.TemplateFetcher;
 import edu.fudan.se.asof.network.TemplateListFetcher;
 import edu.fudan.se.asof.ui.TemplateAdapter;
-import edu.fudan.se.asof.util.Log;
+import edu.fudan.se.asof.engine.Log;
 
 import java.util.Arrays;
 
@@ -79,7 +79,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopService(new Intent(this, FelixService.class));
+        unbindService(conn);
     }
 
     public void controlFelix(View v) {

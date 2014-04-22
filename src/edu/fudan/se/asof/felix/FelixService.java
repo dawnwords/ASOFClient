@@ -7,7 +7,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import edu.fudan.se.asof.engine.AbstractService;
 import edu.fudan.se.asof.engine.ResultHolder;
-import edu.fudan.se.asof.util.Log;
+import edu.fudan.se.asof.engine.Log;
 import edu.fudan.se.asof.util.Parameter;
 import org.apache.felix.framework.Felix;
 import org.apache.felix.framework.util.FelixConstants;

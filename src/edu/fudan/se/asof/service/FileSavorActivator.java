@@ -5,6 +5,7 @@ import edu.fudan.se.asof.engine.AbstractService;
 import edu.fudan.se.asof.engine.ReturnType;
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -17,10 +18,11 @@ public class FileSavorActivator extends AbstractService {
     protected ReturnType invoke(Object... input) {
         String path = (String) input[0];
         byte[] fileContent = (byte[]) input[1];
+        String name = (String) input[2];
 
         FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(path);
+            fos = new FileOutputStream(path + File.separator + name);
             fos.write(fileContent);
             fos.flush();
             toast("Save File Success!");
@@ -36,7 +38,6 @@ public class FileSavorActivator extends AbstractService {
     private void toast(String msg) {
         Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
     }
-
 
     private void close(Closeable closeable) {
         if (closeable != null) {

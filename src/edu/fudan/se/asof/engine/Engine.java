@@ -6,7 +6,6 @@ import android.os.Looper;
 import edu.fudan.se.asof.felix.ServiceInjector;
 import edu.fudan.se.asof.network.BundleFetcher;
 import edu.fudan.se.asof.network.NetworkListener;
-import edu.fudan.se.asof.util.Log;
 import edu.fudan.se.asof.util.Parameter;
 
 import java.lang.reflect.Field;

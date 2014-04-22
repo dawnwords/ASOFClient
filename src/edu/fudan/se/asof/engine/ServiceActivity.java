@@ -52,56 +52,60 @@ public abstract class ServiceActivity {
     public void onTouchEvent(MotionEvent event) {
     }
 
-    protected void finish() {
+    public void finish() {
         activity.finish();
     }
 
-    protected void finish(Object value){
+    public void finish(Object value) {
         activity.finish();
         ResultHolder holder = ActivityResult.getInstance().getServiceActivityResultHolder();
-        if(holder == null){
+        if (holder == null) {
             throw new IllegalAccessError("ResultHolder is Null!");
         }
         holder.set(value);
     }
 
-    protected void addContentView(View view, ViewGroup.LayoutParams params) {
+    public void addContentView(View view, ViewGroup.LayoutParams params) {
         activity.addContentView(view, params);
     }
 
-    protected void setContentView(View view) {
+    public void setContentView(View view) {
         activity.setContentView(view);
     }
 
-    protected void setContentView(View view, ViewGroup.LayoutParams params) {
+    public void setContentView(View view, ViewGroup.LayoutParams params) {
         activity.setContentView(view, params);
     }
 
-    protected Context getContext() {
+    public Context getContext() {
         return activity;
     }
 
-    protected Context getApplicationContext() {
+    public Context getApplicationContext() {
         return activity.getApplicationContext();
     }
 
-    protected LayoutInflater getLayoutInflater() {
+    public LayoutInflater getLayoutInflater() {
         return activity.getLayoutInflater();
     }
 
-    protected Resources getResources() {
+    public Resources getResources() {
         return activity.getResources();
     }
 
-    protected Object getSystemService(String name) {
+    public Object getSystemService(String name) {
         return activity.getSystemService(name);
     }
 
-    protected Object getParameter(String name) {
+    public Object getParameter(String name) {
         return activity.getIntent().getBundleExtra(AdapterActivity.EXTRA_BUNDLE).get(name);
     }
 
-    protected PackageManager getPackageManager() {
+    public PackageManager getPackageManager() {
         return activity.getPackageManager();
+    }
+
+    public void runOnUiThread(Runnable r) {
+        activity.runOnUiThread(r);
     }
 }
