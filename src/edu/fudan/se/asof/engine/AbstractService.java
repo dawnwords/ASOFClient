@@ -41,6 +41,7 @@ public abstract class AbstractService implements BundleActivator {
     }
 
     protected void startServiceActivity(final Bundle extraBundle) {
+        Log.debug();
         if (activityClass != null) {
             postUIRunnable(new Runnable() {
                 @Override
@@ -55,6 +56,7 @@ public abstract class AbstractService implements BundleActivator {
     }
 
     protected <T> T startServiceActivityForResult(final Bundle extraBundle) {
+        Log.debug();
         ResultHolder<T> resultHolder = new ResultHolder<T>();
         ActivityResult.getInstance().setServiceActivityResultHolder(resultHolder);
         startServiceActivity(extraBundle);

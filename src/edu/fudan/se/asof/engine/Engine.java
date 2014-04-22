@@ -17,10 +17,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class Engine {
     public static final class ParamPackage {
-        public Field serviceField;
         public Template template;
         public Handler handler;
-        public BundleFetcher.Response response;
         public ServiceInjector injector;
         public Context context;
     }
@@ -49,22 +47,23 @@ public class Engine {
 
         param.handler = new Handler(Looper.getMainLooper());
         for (Field service : services) {
-            param.serviceField = service;
-            injectDependency(param);
+            injectDependency(param, service);
         }
     }
 
-    private void injectDependency(ParamPackage param) {
-        ServiceDescription description = param.serviceField.getAnnotation(ServiceDescription.class);
+    private void injectDependency(ParamPackage param, Field serviceField) {
+        ServiceDescription description = serviceField.getAnnotation(ServiceDescription.class);
         String bundleDir = Parameter.getInstance().getNewBundleDir().getAbsolutePath();
-        new BundleFetcher(description, bundleDir, new NWListener(param)).start();
+        new BundleFetcher(description, bundleDir, new NWListener(param, serviceField)).start();
     }
 
     private class NWListener implements NetworkListener<BundleFetcher.Response> {
         private ParamPackage param;
+        private Field serviceField;
 
-        NWListener(ParamPackage param) {
+        private NWListener(ParamPackage param, Field serviceField) {
             this.param = param;
+            this.serviceField = serviceField;
         }
 
         @Override
@@ -73,8 +72,7 @@ public class Engine {
             Log.debug(response.inputMatch);
             Log.debug(response.outputMatch);
 
-            param.response = response;
-            SSListener listener = new SSListener(param);
+            SSListener listener = new SSListener(param, response, serviceField);
             param.injector.registerServiceListener(response.name, listener);
         }
 
@@ -86,9 +84,13 @@ public class Engine {
 
     private class SSListener implements ServiceInjector.ServiceStartListener {
         private ParamPackage param;
+        private BundleFetcher.Response response;
+        private Field serviceField;
 
-        private SSListener(ParamPackage param) {
+        private SSListener(ParamPackage param, BundleFetcher.Response response, Field serviceField) {
             this.param = param;
+            this.response = response;
+            this.serviceField = serviceField;
         }
 
         @Override
@@ -96,17 +98,17 @@ public class Engine {
             try {
                 service.setContext(param.context);
                 service.setUiHandler(param.handler);
-                service.setActivityClass(param.response.activityClass);
-                service.setInputMatch(param.response.inputMatch);
-                service.setOutputMatch(param.response.outputMatch);
-                param.serviceField.setAccessible(true);
-                param.serviceField.set(param.template, service);
+                service.setActivityClass(response.activityClass);
+                service.setInputMatch(response.inputMatch);
+                service.setOutputMatch(response.outputMatch);
+                serviceField.setAccessible(true);
+                serviceField.set(param.template, service);
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
             ConcurrentLinkedQueue<Field> services = templateServicesMap.get(param.template);
-            services.remove(param.serviceField);
+            services.remove(serviceField);
             if (services.size() == 0) {
                 injectTemplateField("context", param.context);
                 injectTemplateField("uiHandler", param.handler);

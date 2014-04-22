@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
+import edu.fudan.se.asof.engine.Log;
 import edu.fudan.se.asof.engine.ServiceActivity;
 
 import java.io.IOException;
@@ -58,7 +59,7 @@ public class CameraActivity extends ServiceActivity implements SurfaceHolder.Cal
         try {
             Camera.Parameters params = camera.getParameters();
             Camera.Size selected = params.getSupportedPreviewSizes().get(0);
-            System.out.printf("width:%d,height:%d\n", selected.width, selected.height);
+            Log.debug(String.format("width:%d,height:%d", selected.width, selected.height));
             params.setPreviewSize(selected.width, selected.height);
             camera.setParameters(params);
             camera.setPreviewDisplay(preview.getHolder());

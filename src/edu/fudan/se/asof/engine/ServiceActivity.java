@@ -57,6 +57,7 @@ public abstract class ServiceActivity {
     }
 
     public void finish(Object value) {
+        Log.debug(value.toString());
         activity.finish();
         ResultHolder holder = ActivityResult.getInstance().getServiceActivityResultHolder();
         if (holder == null) {
