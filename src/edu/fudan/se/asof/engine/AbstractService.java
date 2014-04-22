@@ -51,6 +51,13 @@ public abstract class AbstractService implements BundleActivator {
         }
     }
 
+    protected <T> T startServiceActivityForResult(final Bundle extraBundle) {
+        ResultHolder<T> resultHolder = new ResultHolder<T>();
+        ActivityResult.getInstance().setServiceActivityResultHolder(resultHolder);
+        startServiceActivity(extraBundle);
+        return resultHolder.get();
+    }
+
     void setInputMatch(int[] inputMatch) {
         this.inputMatch = inputMatch;
     }

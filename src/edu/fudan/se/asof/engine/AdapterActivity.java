@@ -43,14 +43,14 @@ public class AdapterActivity extends Activity {
 
     @Override
     protected void onPause() {
-        super.onPause();
         activity.onPause();
+        super.onPause();
     }
 
     @Override
     protected void onStop() {
-        super.onStop();
         activity.onStop();
+        super.onStop();
     }
 
     @Override
@@ -61,8 +61,8 @@ public class AdapterActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         activity.onDestroy();
+        super.onDestroy();
     }
 
     @Override

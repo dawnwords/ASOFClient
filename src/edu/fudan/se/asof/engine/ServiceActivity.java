@@ -56,6 +56,15 @@ public abstract class ServiceActivity {
         activity.finish();
     }
 
+    protected void finish(Object value){
+        activity.finish();
+        ResultHolder holder = ActivityResult.getInstance().getServiceActivityResultHolder();
+        if(holder == null){
+            throw new IllegalAccessError("ResultHolder is Null!");
+        }
+        holder.set(value);
+    }
+
     protected void addContentView(View view, ViewGroup.LayoutParams params) {
         activity.addContentView(view, params);
     }

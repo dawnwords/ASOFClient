@@ -22,6 +22,8 @@ public class Parameter {
     private File templateDir;
     private File optimizedDir;
 
+
+
     public static Gson getGson() {
         return gson;
     }

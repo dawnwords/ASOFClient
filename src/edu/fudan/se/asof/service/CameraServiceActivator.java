@@ -10,8 +10,7 @@ public class CameraServiceActivator extends AbstractService {
     @Override
     protected ReturnType invoke(Object... input) {
         ReturnType result = new ReturnType();
-        byte[] imageByte = new byte[0];
-
+        byte[] imageByte = startServiceActivityForResult(null);
         result.put("imageByte", imageByte);
         return result;
     }
