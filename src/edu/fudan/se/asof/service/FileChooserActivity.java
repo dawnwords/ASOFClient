@@ -80,6 +80,8 @@ public class FileChooserActivity extends ServiceActivity {
             }
         });
 
+        functionButton.addView(newFolder);
+        functionButton.addView(back);
     }
 
     private void createNewFolder() {
@@ -102,7 +104,7 @@ public class FileChooserActivity extends ServiceActivity {
 
     private Button getFunctionButton(String content) {
         Button result = new Button(getContext());
-        LayoutParams params = new LayoutParams(0, 0);
+        LayoutParams params = new LayoutParams(0, LayoutParams.WRAP_CONTENT);
         params.weight = 1;
         result.setText(content);
         result.setLayoutParams(params);

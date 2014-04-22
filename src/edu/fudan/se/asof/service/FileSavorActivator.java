@@ -35,8 +35,13 @@ public class FileSavorActivator extends AbstractService {
         return null;
     }
 
-    private void toast(String msg) {
-        Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+    private void toast(final String msg) {
+        postUIRunnable(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void close(Closeable closeable) {
