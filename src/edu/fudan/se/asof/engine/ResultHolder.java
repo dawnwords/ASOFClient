@@ -13,10 +13,12 @@ public class ResultHolder<T> {
             } catch (InterruptedException ignore) {
             }
         }
+        Log.debug(result.toString());
         return result;
     }
 
     public void set(T result) {
+        Log.debug(result.toString());
         synchronized (this) {
             this.result = result;
             this.notify();

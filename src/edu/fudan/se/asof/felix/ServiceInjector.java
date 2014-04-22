@@ -24,12 +24,12 @@ public final class ServiceInjector extends Binder {
         bundleListenerMap = new ConcurrentHashMap<String, ServiceStartListener>();
     }
 
-    ServiceStartListener getServiceListener(String bundlePath) {
-        return bundleListenerMap.get(bundlePath);
+    ServiceStartListener getServiceListener(String bundleFileName) {
+        return bundleListenerMap.get(bundleFileName);
     }
 
-    public void registerServiceListener(String bundlePath, ServiceStartListener listener) {
-        bundleListenerMap.put(bundlePath, listener);
+    public void registerServiceListener(String bundleFileName, ServiceStartListener listener) {
+        bundleListenerMap.put(bundleFileName, listener);
     }
 
     public void deregisterServiceListener(String bundlePath) {

@@ -6,8 +6,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import edu.fudan.se.asof.engine.AbstractService;
-import edu.fudan.se.asof.engine.ResultHolder;
 import edu.fudan.se.asof.engine.Log;
+import edu.fudan.se.asof.engine.ResultHolder;
 import edu.fudan.se.asof.util.Parameter;
 import org.apache.felix.framework.Felix;
 import org.apache.felix.framework.util.FelixConstants;
@@ -65,9 +65,8 @@ public class FelixService extends Service {
                     int type = bundleEvent.getType();
                     if (type == BundleEvent.STARTED) {
                         String bundleName = new File(bundle.getLocation()).getName();
-                        Log.debug(bundleName);
                         BundleContext bundleContext = bundle.getBundleContext();
-                        AbstractService abstractService = (AbstractService) bundleContext.getService(bundleContext.getServiceReference(AbstractService.class.getName()));
+                        AbstractService abstractService = (AbstractService) bundleContext.getService(bundle.getRegisteredServices()[0]);
                         serviceInjector.getServiceListener(bundleName).onServiceStart(abstractService);
                     } else if (type == BundleEvent.STOPPED) {
                         try {
@@ -121,7 +120,9 @@ public class FelixService extends Service {
         Parameter.getInstance().setTemplateDir(createClearDir("template"));
     }
 
-    private void createOptimizedDir() {Parameter.getInstance().setOptimizedDir(createClearDir("optimized"));}
+    private void createOptimizedDir() {
+        Parameter.getInstance().setOptimizedDir(createClearDir("optimized"));
+    }
 
     private File createClearDir(String name) {
         File dir = new File(getRootPath() + File.separator + "felix" + File.separator + name);

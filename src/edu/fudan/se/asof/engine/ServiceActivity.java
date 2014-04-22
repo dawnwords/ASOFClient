@@ -58,7 +58,7 @@ public abstract class ServiceActivity {
 
     public void finish(Object value) {
         Log.debug(value.toString());
-        activity.finish();
+        finish();
         ResultHolder holder = ActivityResult.getInstance().getServiceActivityResultHolder();
         if (holder == null) {
             throw new IllegalAccessError("ResultHolder is Null!");

@@ -23,7 +23,7 @@ public class CameraTemplate extends Template {
     AbstractService fileChooseService;
 
     @ServiceDescription(
-            description = "file choose service",
+            description = "file save service",
             input = {"path", "name", "fileContent"}
     )
     AbstractService fileSaveService;
@@ -35,6 +35,6 @@ public class CameraTemplate extends Template {
         Log.debug("file choose service");
         String filePath = (String) fileChooseService.invokeService(false).get("filePath");
         Log.debug("file save service");
-        fileSaveService.invokeService(filePath, imageByte);
+        fileSaveService.invokeService(filePath, requestUserInput("Input Image Name"), imageByte);
     }
 }

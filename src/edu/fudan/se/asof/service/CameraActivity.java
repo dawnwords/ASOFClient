@@ -25,11 +25,13 @@ public class CameraActivity extends ServiceActivity implements SurfaceHolder.Cal
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.debug();
         initUI();
         camera = Camera.open();
     }
 
     private void initUI() {
+        Log.debug();
         RelativeLayout root = new RelativeLayout(getContext());
         root.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
@@ -51,11 +53,13 @@ public class CameraActivity extends ServiceActivity implements SurfaceHolder.Cal
 
     @Override
     public void onClick(View v) {
+        Log.debug();
         camera.takePicture(this, null, null, this);
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        Log.debug();
         try {
             Camera.Parameters params = camera.getParameters();
             Camera.Size selected = params.getSupportedPreviewSizes().get(0);
@@ -72,6 +76,7 @@ public class CameraActivity extends ServiceActivity implements SurfaceHolder.Cal
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        Log.debug();
         try {
             camera.setPreviewDisplay(preview.getHolder());
         } catch (Exception e) {
@@ -81,6 +86,8 @@ public class CameraActivity extends ServiceActivity implements SurfaceHolder.Cal
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
+
+        Log.debug();
         if (camera != null) {
             camera.stopPreview();
             camera.release();
@@ -90,11 +97,12 @@ public class CameraActivity extends ServiceActivity implements SurfaceHolder.Cal
 
     @Override
     public void onPictureTaken(byte[] data, Camera camera) {
+        Log.debug();
         finish(data);
     }
 
     @Override
     public void onShutter() {
-
+        Log.debug();
     }
 }

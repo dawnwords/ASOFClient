@@ -84,7 +84,7 @@ public abstract class AbstractService implements BundleActivator {
     }
 
     private Object[] getInputAfterMatching(Object[] input) {
-        if (inputMatch != null) {
+        if (inputMatch != null && input.length > 0) {
             Object[] inputAfterMatching = new Object[input.length];
             for (int i = 0; i < input.length; i++) {
                 inputAfterMatching[i] = input[inputMatch[i]];
