@@ -54,16 +54,18 @@ public class Engine {
     private void injectDependency(ParamPackage param, Field serviceField) {
         ServiceDescription description = serviceField.getAnnotation(ServiceDescription.class);
         String bundleDir = Parameter.getInstance().getNewBundleDir().getAbsolutePath();
-        new BundleFetcher(description, bundleDir, new NWListener(param, serviceField)).start();
+        new BundleFetcher(description, bundleDir, new NWListener(param, serviceField, description)).start();
     }
 
     private class NWListener implements NetworkListener<BundleFetcher.Response> {
         private ParamPackage param;
         private Field serviceField;
+        private ServiceDescription description;
 
-        private NWListener(ParamPackage param, Field serviceField) {
+        private NWListener(ParamPackage param, Field serviceField, ServiceDescription description) {
             this.param = param;
             this.serviceField = serviceField;
+            this.description = description;
         }
 
         @Override
@@ -72,7 +74,7 @@ public class Engine {
             Log.debug(response.inputMatch);
             Log.debug(response.outputMatch);
 
-            SSListener listener = new SSListener(param, response, serviceField);
+            SSListener listener = new SSListener(param, response, description, serviceField);
             param.injector.registerServiceListener(response.name, listener);
         }
 
@@ -85,11 +87,13 @@ public class Engine {
     private class SSListener implements ServiceInjector.ServiceStartListener {
         private ParamPackage param;
         private BundleFetcher.Response response;
+        private ServiceDescription description;
         private Field serviceField;
 
-        private SSListener(ParamPackage param, BundleFetcher.Response response, Field serviceField) {
+        private SSListener(ParamPackage param, BundleFetcher.Response response, ServiceDescription description, Field serviceField) {
             this.param = param;
             this.response = response;
+            this.description = description;
             this.serviceField = serviceField;
         }
 
@@ -101,6 +105,7 @@ public class Engine {
                 service.setActivityClass(response.activityClass);
                 service.setInputMatch(response.inputMatch);
                 service.setOutputMatch(response.outputMatch);
+                service.setOriginParaName(description.output());
                 serviceField.setAccessible(true);
                 serviceField.set(param.template, service);
             } catch (Exception e) {

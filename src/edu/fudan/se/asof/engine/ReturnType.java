@@ -25,11 +25,11 @@ public class ReturnType {
         return null;
     }
 
-    ReturnType getMatched(int[] outputMatch) {
+    ReturnType getMatched(int[] outputMatch, String[] originParaName) {
         if (outputMatch != null) {
             ReturnType result = new ReturnType();
             for (int i = 0; i < outputMatch.length; i++) {
-                result.nvPairs.add(this.nvPairs.get(i));
+                result.put(originParaName[i], result.nvPairs.get(outputMatch[i]).value);
             }
             return result;
         } else {

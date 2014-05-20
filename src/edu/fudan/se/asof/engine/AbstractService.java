@@ -14,6 +14,7 @@ import java.util.Arrays;
  */
 public abstract class AbstractService implements BundleActivator {
     private int[] inputMatch, outputMatch;
+    private String[] originParaName;
     private String activityClass;
     private Context context;
     private Handler uiHandler;
@@ -21,10 +22,10 @@ public abstract class AbstractService implements BundleActivator {
     public ReturnType invokeService(Object... input) {
         Log.debug(Arrays.toString(input));
         ReturnType type = invoke(getInputAfterMatching(input));
-        return type == null ? null : type.getMatched(outputMatch);
+        return type == null ? null : type.getMatched(outputMatch, originParaName);
     }
 
-    protected abstract ReturnType invoke(Object... input);
+    protected abstract ReturnType invoke(Object... input);// TODO throw Exception to repick service
 
     protected void onStart(BundleContext context) {
     }
@@ -81,6 +82,10 @@ public abstract class AbstractService implements BundleActivator {
 
     void setUiHandler(Handler uiHandler) {
         this.uiHandler = uiHandler;
+    }
+
+    void setOriginParaName(String[] originParaName) {
+        this.originParaName = originParaName;
     }
 
     private Object[] getInputAfterMatching(Object[] input) {
